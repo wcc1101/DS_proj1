@@ -13,8 +13,8 @@ int main()
     if (!fin)
         cout << "fail to input" << endl;
 
-    //fin.get(m); //rows
-    //fin.get(n); //cols
+    fin.get(m); //rows
+    fin.get(n); //cols
     ground = new int *[m];
     for (int i = 0; i < m; i++)
         ground[i] = new int[n]; //make m*n ground
