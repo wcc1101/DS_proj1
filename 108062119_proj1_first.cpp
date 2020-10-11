@@ -4,10 +4,9 @@
 #include <string>
 using namespace std;
 
-int **ground, width, length;
+int **ground, width, height;
 int nowblock[4][4];
 ifstream fin;
-
 int sets_pos[19][4][4] =
     {
         {{0, 0, 0, 0}, {0, 0, 0, 0}, {1, 1, 1, 0}, {0, 1, 0, 0}},
@@ -59,17 +58,17 @@ int **set(void)
 
     int m, n;
     fin >> m >> n;
-    length = m;
+    height = m + 4;
     width = n;
-    int **g = new int *[m];
-    for (int i = 0; i < m; i++)
-        g[i] = new int[n]{};
+    int **g = new int *[height];
+    for (int i = 0; i < height; i++)
+        g[i] = new int[width]{};
     return g;
 }
 
 void display(void)
 {
-    for (int i = 0; i < length; i++)
+    for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
             cout << ground[i][j] << " ";
@@ -77,26 +76,46 @@ void display(void)
     }
 }
 
-class point
+int drop(int r, int c)
 {
-public:
-    point(int x = 0, int y = 0) : x(x), y(y) {}
-    ~point() {}
-    int x, y;
-};
-
-class blocks
-{
-public:
-    blocks(int x = 0, int y = 0, string k = 0) : kind(k)
+    while (!collision(r + 1, c))
     {
-        refpoint.x = x;
-        refpoint.y = y;
+        r++;
     }
-    point refpoint;
-    string kind;
-    point *array;
-};
+    return r;
+}
+
+bool collision(int r, int c)
+{
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            if (nowblock[i][j] && ground[r - 3 + i][c + j])
+                return 1;
+    return 0;
+}
+
+void erase(int r, int c)
+{
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            if (nowblock[i][j])
+                ground[r - 3 + i][c + j] = 1;
+    int flag = 1;
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < width; j++)
+            if (!ground[r - 3 + i][j])
+                flag = 0;
+        if (flag)
+        {
+            for (int j = 0; j < width; j++)
+                ground[r - 3 + i][j] = 0;
+            for (int o = r - 3 + i; o > 3; o--)
+                for (int p = 0; p < c; p++)
+                    ground[o][p] = ground[o - 1][p];
+        }
+    }
+}
 
 void start(void)
 {
@@ -107,11 +126,17 @@ void start(void)
             break;
         else
         {
-            int px, py;
-            fin >> px >> py;
+            int sp, st;
+            fin >> sp >> st;
             for (int i = 0; i < 4; i++)
                 for (int j = 0; j < 4; j++)
                     nowblock[i][j] = sets_pos[sets[str]][i][j];
+            int row = 0;
+            int col = sp - 1;
+            row = drop(row, col);
+            col += st;
+            row = drop(row, col);
+            erase(row, col);
         }
     }
 }
