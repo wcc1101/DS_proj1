@@ -58,6 +58,7 @@ int **set(void)
 
     int m, n;
     fin >> m >> n;
+    //cout << "m: " << m << endl << "n: " << n << endl;
     height = m + 4;
     width = n;
     int **g = new int *[height];
@@ -68,7 +69,7 @@ int **set(void)
 
 void display(void)
 {
-    for (int i = 0; i < height; i++)
+    for (int i = 4; i < height; i++)
     {
         for (int j = 0; j < width; j++)
             cout << ground[i][j] << " ";
@@ -76,43 +77,51 @@ void display(void)
     }
 }
 
+bool collision(int r, int c)
+{
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            if ((nowblock[i][j] && ground[r - 3 + i][c + j]) || r == height)
+                return 1;
+    return 0;
+}
+
 int drop(int r, int c)
 {
     while (!collision(r + 1, c))
     {
+        //cout << "now row: " << r + 1 << endl;
         r++;
     }
     return r;
 }
 
-bool collision(int r, int c)
-{
-    for (int i = 0; i < 4; i++)
-        for (int j = 0; j < 4; j++)
-            if (nowblock[i][j] && ground[r - 3 + i][c + j])
-                return 1;
-    return 0;
-}
-
 void erase(int r, int c)
 {
+    //cout << r << endl;
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
             if (nowblock[i][j])
                 ground[r - 3 + i][c + j] = 1;
-    int flag = 1;
-    for (int i = 0; i < 4; i++)
+    //display();
+    int x = 0;
+    for (int i = 3; i >= 0; i--)
     {
+        //cout << "x: " << x << endl;
+        int flag = 1;
         for (int j = 0; j < width; j++)
-            if (!ground[r - 3 + i][j])
+            if (!ground[r - 3 + i + x][j])
                 flag = 0;
         if (flag)
         {
+            //cout << "erase: " << r - 3 + i + x << endl;
             for (int j = 0; j < width; j++)
-                ground[r - 3 + i][j] = 0;
-            for (int o = r - 3 + i; o > 3; o--)
-                for (int p = 0; p < c; p++)
+                ground[r - 3 + i + x][j] = 0;
+            for (int o = r - 3 + i + x; o > 3; o--)
+                for (int p = 0; p < width; p++)
                     ground[o][p] = ground[o - 1][p];
+            //display();
+            x++;
         }
     }
 }
@@ -122,16 +131,24 @@ void start(void)
     string str;
     while (fin >> str)
     {
+        //cout << str << endl;
         if (str == "End")
             break;
         else
         {
             int sp, st;
             fin >> sp >> st;
+            //cout << sp << ' ' << st << endl;
             for (int i = 0; i < 4; i++)
+            {
                 for (int j = 0; j < 4; j++)
+                {
                     nowblock[i][j] = sets_pos[sets[str]][i][j];
-            int row = 0;
+                    //cout << nowblock[i][j];
+                }
+                //cout << endl;
+            }
+            int row = 4;
             int col = sp - 1;
             row = drop(row, col);
             col += st;
@@ -144,6 +161,7 @@ void start(void)
 int main()
 {
     ground = set();
-    display();
+    //display();
     start();
+    display();
 }
