@@ -6,6 +6,7 @@ using namespace std;
 int **ground, width, height;
 int nowblock[4][4];
 ifstream fin;
+ofstream fout;
 int sets_pos[19][4][4] =
     {
         {{0, 0, 0, 0}, {0, 0, 0, 0}, {1, 1, 1, 0}, {0, 1, 0, 0}},
@@ -49,13 +50,8 @@ map<string, int> sets{
     {"O", 18}};
 int **set(void)
 {
-    fin.open("testcase.txt");
-    if (!fin)
-        cout << "fail reading testcase" << endl;
-
     int m, n;
     fin >> m >> n;
-    //cout << "m: " << m << endl << "n: " << n << endl;
     height = m + 4;
     width = n;
     int **g = new int *[height];
@@ -67,9 +63,10 @@ void display(void)
 {
     for (int i = 4; i < height; i++)
     {
-        for (int j = 0; j < width; j++)
-            cout << ground[i][j] << " ";
-        cout << endl;
+        fout << ground[i][0];
+        for (int j = 1; j < width; j++)
+            fout << " " << ground[i][j];
+        fout << endl;
     }
 }
 bool collision(int r, int c)
@@ -137,8 +134,12 @@ void start(void)
         }
     }
 }
-int main()
+int main(int argc, char *argv[])
 {
+    fin.open(argv[1]);
+    if (!fin)
+        cout << "fail reading testcase" << endl;
+    fout.open("108062119_proj1.final");
     ground = set();
     start();
     display();
