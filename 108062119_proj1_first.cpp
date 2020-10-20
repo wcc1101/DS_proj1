@@ -104,7 +104,7 @@ void erase(int r, int c)
         {
             for (int j = 0; j < width; j++)
                 ground[r - 3 + i + x][j] = 0;
-            for (int o = r - 3 + i + x; o > 3; o--)
+            for (int o = r - 3 + i + x; o > 0; o--)
                 for (int p = 0; p < width; p++)
                     ground[o][p] = ground[o - 1][p];
             x++;
@@ -132,6 +132,8 @@ void start(void)
             row = drop(row, col);
             erase(row, col);
         }
+        display();
+        fout << endl;
     }
 }
 int main(int argc, char *argv[])
